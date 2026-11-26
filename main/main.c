@@ -4,9 +4,10 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/semphr.h"
-
+#include "driver/gpio.h"
 #include "nvs_flash.h"
 #include "esp_log.h"
+
 #include "esp_system.h"
 #include "esp_ota_ops.h"
 #include "esp_netif_sntp.h"
@@ -222,6 +223,11 @@ void app_main(void)
 
     // Initialize WiFi and provisioning
     ESP_LOGI(TAG, "Initializing WiFi and provisioning...");
+    // Select external antenna on Waveshare ESP32-C6-Zero-B
+    ESP_ERROR_CHECK(gpio_reset_pin(GPIO_NUM_7));
+    ESP_ERROR_CHECK(gpio_set_level(GPIO_NUM_7, 1));
+    ESP_ERROR_CHECK(gpio_set_direction(GPIO_NUM_7, GPIO_MODE_OUTPUT));
+    ESP_LOGI(TAG, "External WiFi antenna selected");
     ESP_ERROR_CHECK(wifi_provisioning_init());
 
     // Initialize MQTT client (will start when WiFi connects)
